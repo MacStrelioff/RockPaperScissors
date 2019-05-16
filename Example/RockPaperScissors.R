@@ -54,8 +54,8 @@ server <- function(input, output) {
   values$opp_actions = c() # track opponent actions
   values$score =0; # track score
   values$scores=0; # track score history for feedback
-  values$grams = data.frame('rrrrr'=0) # initialize to store gram counts
-  
+  values$grams = data.frame('rrrrr'=rep(0,3)) # initialize to store gram counts
+  values$as = c("r","p","s") # possible actions
 
   # text feedback
   #observeEvent(input$rock,{
@@ -70,29 +70,51 @@ server <- function(input, output) {
         # policy -- code to greedily pick best action
         ## if fewer than 5 actions taken, draw uniformly
         if(length(values$opp_actions)<5){
-          values$a=sample(c("r","p","s"),1)
+          values$a=sample(values$as,1)
           } else{ # if at least 5 actions taken
           nobs = length(values$opp_actions)
-          ngram = values$opp_actions[(nobs-5):nobs]
+          ngram = paste(values$opp_actions[(nobs-4):nobs],collapse = "")
+          cat("\n",ngram)
+          # if this pattern not observed before, initialize it and choose randomly
+          if(!any(names(values$grams)==ngram)){
+            values$grams[ngram]=rep(0,3)
+            values$a=sample(values$as,1)
+          } else { # if at least 5 actions taken, and this pattern has been seen before, 
+            values$a=values$as[which.min(values$grams[ngram][[1]])]
+            # FIX LOGIC, 
+            # currently, pick the action that opponent chooses the least
+          }
+          cat("\n",names(values$grams))
+          cat("\n",values$grams[ngram][[1]])
         }
-        ## if ngram has been observed
         
+        # get opponent action and outcome
+        if(input$rock    -sum(values$opp_actions=="r")==1){
+          opp_action="r"
+          dscore = switch(values$a,"r"=0,"p"=1,"s"=-1)
+          }
+        if(input$paper   -sum(values$opp_actions=="p")==1){
+          opp_action="p"
+          dscore = switch(values$a,"r"=-1,"p"=0,"s"=1)
+        }
+        if(input$scissors-sum(values$opp_actions=="s")==1){
+          opp_action="s"
+          dscore = switch(values$a,"r"=1,"p"=-1,"s"=0)
+        }
         
-        
-        ## else, use 5-grams
-        # draw action
-        sample(c("r","p","s"),1,prob=c(.1,.1,.8))
         # evaluate outcome
+        values$score  = values$score+dscore
+        values$scores = c(values$scores,values$score);
         
-        # update opponent model
-        cat(input$rock,input$paper,input$scissors)
-        if(input$rock    ==1){opp_action="r"}
-        if(input$paper   ==1){opp_action="p"}
-        if(input$scissors==1){opp_action="s"}
+        # update opponent model 
         values$opp_actions = c(values$opp_actions,opp_action);
-
-      values$score  = values$score+(-1)^(rbinom(n=1,size=1,.7))
-      values$scores = c(values$scores,values$score);
+        
+        #if(length(values$opp_actions)>5){
+        #  if(any(names(values$grams)==ngram)){
+        #    values$grams[ngram]=values$grams[ngram]+values$as==opp_action
+        #  }
+        #}
+        
       }
     
     # use strings to code, then just take last 5 strings and use as the key for the dictionary of 5-grams...
@@ -100,7 +122,7 @@ server <- function(input, output) {
       try({
       x = seq(0,values$round);
       y = values$scores;
-      cat("\n round: ",values$round, ", score: ",values$score,", len(x): ",length(x)," len(y):",length(y),"opp_act: ",values$opp_actions,
+      cat("\n round:",values$round, ", score:",values$score,", len(x): ",length(x)," len(y):",length(y),", opp_act:",values$opp_actions,
           sep="")
       # draw the histogram with the specified number of bins
       plot(x,y,type="l",xlab = "Rounds",ylab="Score")
