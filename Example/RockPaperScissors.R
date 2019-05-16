@@ -50,26 +50,64 @@ server <- function(input, output) {
   
   # initialize variables (runs once when app visited)
   values <- reactiveValues()
-  values$round = 0; # track round
-  values$score= 0   # track score
-  values$scores=0
-  values$ts=0
+  values$round =0; # track round
+  values$opp_actions = c() # track opponent actions
+  values$score =0; # track score
+  values$scores=0; # track score history for feedback
+  values$grams = data.frame('rrrrr'=0) # initialize to store gram counts
   
+
   # text feedback
   #observeEvent(input$rock,{
   #  values$t = values$t+1 # step in time
   #})
   
-  # use strings to code, then just take last 5 strings and use as the key for the dictionary of 5-grams...
-  output$distPlot <- renderPlot({
-    values$t = values$t+1
-    values$ts = c(values$ts,values$t)
-    values$scores = c(values$scores,1)
-     x = seq(0,values$round)
-     y = values$scores
-     # draw the histogram with the specified number of bins
-     plot(x,values$score,type="l",xlab = "Rounds",ylab="Score")
-   })
+  observeEvent(input$rock | input$paper | input$scissors,{
+      # if any action taken (done to block the first run when these are all NULL->0)
+      if(input$rock | input$paper | input$scissors){
+        # increment round
+        values$round  = values$round+1;
+        # policy -- code to greedily pick best action
+        ## if fewer than 5 actions taken, draw uniformly
+        if(length(values$opp_actions)<5){
+          values$a=sample(c("r","p","s"),1)
+          } else{ # if at least 5 actions taken
+          nobs = length(values$opp_actions)
+          ngram = values$opp_actions[(nobs-5):nobs]
+        }
+        ## if ngram has been observed
+        
+        
+        
+        ## else, use 5-grams
+        # draw action
+        sample(c("r","p","s"),1,prob=c(.1,.1,.8))
+        # evaluate outcome
+        
+        # update opponent model
+        cat(input$rock,input$paper,input$scissors)
+        if(input$rock    ==1){opp_action="r"}
+        if(input$paper   ==1){opp_action="p"}
+        if(input$scissors==1){opp_action="s"}
+        values$opp_actions = c(values$opp_actions,opp_action);
+
+      values$score  = values$score+(-1)^(rbinom(n=1,size=1,.7))
+      values$scores = c(values$scores,values$score);
+      }
+    
+    # use strings to code, then just take last 5 strings and use as the key for the dictionary of 5-grams...
+    output$distPlot <- renderPlot({
+      try({
+      x = seq(0,values$round);
+      y = values$scores;
+      cat("\n round: ",values$round, ", score: ",values$score,", len(x): ",length(x)," len(y):",length(y),"opp_act: ",values$opp_actions,
+          sep="")
+      # draw the histogram with the specified number of bins
+      plot(x,y,type="l",xlab = "Rounds",ylab="Score")
+      })
+    })
+    })
+  
 }
 
 # Run the application 
