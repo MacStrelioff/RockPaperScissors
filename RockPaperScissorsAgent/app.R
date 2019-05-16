@@ -7,6 +7,14 @@
 #    http://shiny.rstudio.com/
 #
 
+# for integrating with a SQL database; 
+# https://shiny.rstudio.com/articles/overview.html
+
+# TODO: 
+# add databasing, log user data
+# plot data from other sessions in a lighter, different color (light blue)
+
+
 # for hosting shiny apps, I'm using 
 # macstrelioff.shinyapps.io
 # to host an app, run:
