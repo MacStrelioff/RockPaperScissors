@@ -10,6 +10,9 @@
 # for integrating with a SQL database; 
 # https://shiny.rstudio.com/articles/overview.html
 
+# more docs on shiny and including servers; 
+# https://docs.rstudio.com/shinyapps.io/applications.html#accessing-databases-with-odbc
+
 # TODO: 
 # add databasing, log user data
 # plot data from other sessions in a lighter, different color (light blue)
