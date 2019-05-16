@@ -27,19 +27,17 @@ library(shiny)
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    # Application title
-   titlePanel("Rescorla Wagner Model Example"),
+   titlePanel("Rock Paper Scissors Bot"),
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-         sliderInput("learning_rate",
-                     "Learning Rate:",
-                     min = 0,
-                     max = 1,
-                     value = .2,
-                     step = .01),
-         actionButton("step",
-                      "Step")
-      ),
+         actionButton("rock",
+                      "Rock"),
+         actionButton("paper",
+                      "Paper"),
+         actionButton("scissors",
+                      "Scissors")
+         ),
       # Show a plot of the generated distribution
       mainPanel(
          plotOutput("distPlot") # breaks for a name other than distPlot?
@@ -52,32 +50,25 @@ server <- function(input, output) {
   
   # initialize variables (runs once when app visited)
   values <- reactiveValues()
-  values$t=0;     # timestep
-  values$v=0;     # value
-  values$vs = 0   # values to track
-  values$rs = 0
+  values$round = 0; # track round
+  values$score= 0   # track score
+  values$scores=0
+  values$ts=0
   
   # text feedback
-  observeEvent(input$step,{
-    # Create dependency on the button 'step'
-    input$step
-    values$t = values$t+1 # step in time
-    r = rbinom(size=1,n=1,.7)
-    pe= r-values$v # prediction error
-    values$v = values$v+isolate(input$learning_rate) * pe
-    values$vs= c(values$vs,values$v)
-    values$rs= c(values$rs,r)
-    cat("\n event observed:","t=",values$t,sep="")
-  })
+  #observeEvent(input$rock,{
+  #  values$t = values$t+1 # step in time
+  #})
   
+  # use strings to code, then just take last 5 strings and use as the key for the dictionary of 5-grams...
   output$distPlot <- renderPlot({
-     # generate bins based on input$bins from ui.R
-     x = seq(0,values$t)
+    values$t = values$t+1
+    values$ts = c(values$ts,values$t)
+    values$scores = c(values$scores,1)
+     x = seq(0,values$round)
+     y = values$scores
      # draw the histogram with the specified number of bins
-     plot(x,values$vs,type="l",xlab = "Trials",ylab="Value Estimate",
-          ylim=c(0,1))
-     points(x,values$vs,pch=values$rs*15+4,col=values$rs+2)
-     abline(h=.7,lty=2)
+     plot(x,values$score,type="l",xlab = "Rounds",ylab="Score")
    })
 }
 
