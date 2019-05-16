@@ -91,7 +91,7 @@ server <- function(input, output) {
           } else{ # if at least 5 actions taken
           nobs = length(values$opp_actions)
           ngram = paste(values$opp_actions[(nobs-4):nobs],collapse = "")
-          cat("\n",ngram)
+          #cat("\n",ngram)
           # if this pattern not observed before, initialize it and choose randomly
           if(!any(names(values$grams)==ngram)){
             values$grams[ngram]=rep(0,3)
@@ -100,8 +100,8 @@ server <- function(input, output) {
             pred = values$as[which.max(values$grams[ngram][[1]])]
             values$a=switch(pred,"r"="p","p"="s","s"="r")
           }
-          cat("\n",names(values$grams))
-          cat("\n",values$grams[ngram][[1]])
+          #cat("\n",names(values$grams))
+          #cat("\n",values$grams[ngram][[1]])
         }
         
         # get opponent action and outcome

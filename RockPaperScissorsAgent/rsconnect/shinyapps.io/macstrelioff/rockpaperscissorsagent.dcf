@@ -5,6 +5,6 @@ account: macstrelioff
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 932730
-bundleId: 2088382
+bundleId: 2088398
 url: https://macstrelioff.shinyapps.io/rockpaperscissorsagent/
-when: 1557989524.00715
+when: 1557990266.68306
