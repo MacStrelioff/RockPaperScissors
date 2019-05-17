@@ -13,6 +13,13 @@
 # more docs on shiny and including servers; 
 # https://docs.rstudio.com/shinyapps.io/applications.html#accessing-databases-with-odbc
 
+# on hosting with amazon AWS:
+# https://www.charlesbordet.com/en/shiny-aws-1/
+# and here;
+# https://medium.com/@CharlesBordet/how-to-deploy-a-shiny-app-on-aws-part-1-4893d0a7432f
+# and here
+# https://stackoverflow.com/questions/47725234/understanding-the-scalability-of-rshiny-apps-hosted-on-shinyserver
+
 # TODO: 
 # add databasing, log user data
 # plot data from other sessions in a lighter, different color (light blue)
